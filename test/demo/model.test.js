@@ -1,7 +1,7 @@
 import Model from '../../src/demo/model.js';
 import Adagrams from '../../src/demo/adagrams.js';
 
-describe.skip('Game Model', () => {
+describe('Game Model', () => {
   const config = {
     players: [
       'Player A',
@@ -139,7 +139,7 @@ describe.skip('Game Model', () => {
       });
 
       it('winner', () => {
-        const model = new Model({ ...config, rounds : 2 });
+        const model = new Model({ ...config, rounds: 2 });
 
         // Start game, no one has won yet
         let gameState = model.nextRound();
@@ -327,7 +327,7 @@ describe.skip('Game Model', () => {
       it('does not add word to history', () => {
         const model = getModel();
         const word = getWord(model);
-        const origPlays = {...model.plays};
+        const origPlays = { ...model.plays };
 
         model.playWord(word);
 
