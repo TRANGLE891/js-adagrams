@@ -1,12 +1,12 @@
-const LETTER_POOL = {
-  A: 9, B: 2, C: 2, D: 4, E: 12, F: 2, G: 3, H: 2, I: 9, J: 1,
-  K: 1, L: 4, M: 2, N: 6, O: 8, P: 2, Q: 1, R: 6, S: 4, T: 6,
-  U: 4, V: 2, W: 2, X: 1, Y: 2, Z: 1
-};
+
 export const drawLetters = () => {
+  const LETTER_POOL = {
+    A: 9, B: 2, C: 2, D: 4, E: 12, F: 2, G: 3, H: 2, I: 9, J: 1,
+    K: 1, L: 4, M: 2, N: 6, O: 8, P: 2, Q: 1, R: 6, S: 4, T: 6,
+    U: 4, V: 2, W: 2, X: 1, Y: 2, Z: 1
+  };
   // Implement this method for wave 1
   const listLetters = [];
-
   for (const [letter, count] of Object.entries(LETTER_POOL)) {
     for (let i = 0; i < count; i++) {
       listLetters.push(letter);
@@ -21,29 +21,32 @@ export const drawLetters = () => {
   return hand;
 };
 
+
 export const usesAvailableLetters = (input, lettersInHand) => {
   // Implement this method for wave 2
-  const word = input.toUpperCase();
-  const lettersCopy = [...lettersInHand];
-  for (const char of word) {
-    const index = lettersCopy.indexOf(char);
-    if (index !== -1) {
-      lettersCopy.splice(index, 1);
-    } else {
+  const letterCount = {};
+  for (const letter of lettersInHand) {
+    letterCount[letter] = (letterCount[letter] ?? 0) + 1;
+  }
+
+  for (const char of input.toUpperCase()) {
+    if (!letterCount[char]) {
       return false;
     }
+    letterCount[char] -= 1;
   }
+
   return true;
 };
 
-const scoreChart = {
-  A: 1, B: 3, C: 3, D: 2, E: 1, F: 4, G: 2, H: 4,
-  I: 1, J: 8, K: 5, L: 1, M: 3, N: 1, O: 1, P: 3,
-  Q: 10, R: 1, S: 1, T: 1, U: 1, V: 4, W: 4, X: 8,
-  Y: 4, Z: 10
-};
 
 export const scoreWord = (word) => {
+  const scoreChart = {
+    A: 1, B: 3, C: 3, D: 2, E: 1, F: 4, G: 2, H: 4,
+    I: 1, J: 8, K: 5, L: 1, M: 3, N: 1, O: 1, P: 3,
+    Q: 10, R: 1, S: 1, T: 1, U: 1, V: 4, W: 4, X: 8,
+    Y: 4, Z: 10
+  };
   // Implement this method for wave 3
   const wordUpper = word.toUpperCase();
   let point = 0;
@@ -58,27 +61,27 @@ export const scoreWord = (word) => {
 
 export const highestScoreFrom = (words) => {
   // Implement this method for wave 4
+  let bestWord = "";
   let highestScore = 0;
-  let bestWord = '';
 
   for (const word of words) {
-    const currentScore = scoreWord(word);
+    const score = scoreWord(word);
+    const shouldReplace =
+      // Case 1: higher score always wins
+      score > highestScore ||
+      // Case 2: same score => apply tie-breaking rules
+      (score === highestScore && (
+        // 1. new word has length 10 => auto win unless old word also length 10
+        (word.length === 10 && bestWord.length !== 10) ||
+        // 2. neither is 10 letters => shorter word wins
+        (word.length < bestWord.length && bestWord.length !== 10)
+      ));
 
-    if (currentScore > highestScore) {
-      highestScore = currentScore;
+    if (shouldReplace) {
       bestWord = word;
-    } else if (currentScore === highestScore) {
-      // Tie-breaking rules
-      if (bestWord.length === 10) {
-        continue; // keep the existing bestWord
-      } else if (word.length === 10) {
-        bestWord = word; // new word wins
-      } else if (word.length < bestWord.length) {
-        bestWord = word; // new word wins
-      }
+      highestScore = score;
     }
   }
 
   return { word: bestWord, score: highestScore };
-
 };
